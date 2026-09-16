@@ -68,6 +68,30 @@ survey2 <- rbind(survey_combined_US, survey_combined)
 survey2 <- na.omit(survey2)
 write.csv(survey2, file="Chp2_Data_map.csv")
 
+## distance violin plot and kruskal w##
+# import distance data
+distance_data <- read_csv("Distance_r.csv")
+
+# Kruskal-Wallis Test
+kruskal.test(distance ~ Q19,
+             data = distance_data)
+
+kruskal_effsize(distance ~ Q19, data = distance_data)
+
+# sqrt the distance
+distance_data <- distance_data %>% 
+  mutate(distance_sq = sqrt(distance))
+
+# plot distance x ISB
+v_plot <- ggplot(distance_data, aes(factor(Q19, order = TRUE,
+                                           levels = c("1","2","3","4","5")),distance_sq))
+v_plot + geom_violin() + geom_boxplot(width=0.1)+
+  labs(
+    x = "Information Seeking Frequency",
+    y = "Distance (sqrt)"
+  )+
+  scale_x_discrete(labels = c("Never", "Rarely", "Sometimes", "Most of the Time", "Always"))
+
 
 ## k-medoids clustering starts here ##
 
@@ -652,3 +676,4 @@ kruskal_effsize(Q18_swimming ~ CLUSTER2, data = cluster_r)
 kruskal_effsize(Q18_fishing ~ CLUSTER2, data = cluster_r)
 kruskal_effsize(Q18_boarding ~ CLUSTER2, data = cluster_r)
 kruskal_effsize(Q18_boating ~ CLUSTER2, data = cluster_r)
+
